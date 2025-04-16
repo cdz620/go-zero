@@ -113,15 +113,7 @@ func paramsForRoute(route spec.Route) string {
 		return ""
 	}
 	var params []string
-	if hasParams {
-		params = append(params, fmt.Sprintf("params: %s", rt+"Params"))
-	}
-	if hasBody {
-		params = append(params, fmt.Sprintf("req: %s", rt))
-	}
-	if hasHeader {
-		params = append(params, fmt.Sprintf("headers: %s", rt+"Headers"))
-	}
+	// path params first
 	if hasPath {
 		ds, ok := route.RequestType.(spec.DefineStruct)
 		if !ok {
@@ -140,6 +132,15 @@ func paramsForRoute(route spec.Route) string {
 				params = append(params, fmt.Sprintf("%s: %s", tags[0].Name, valueType))
 			}
 		}
+	}
+	if hasParams {
+		params = append(params, fmt.Sprintf("params: %s", rt+"Params"))
+	}
+	if hasBody {
+		params = append(params, fmt.Sprintf("req: %s", rt))
+	}
+	if hasHeader {
+		params = append(params, fmt.Sprintf("headers: %s", rt+"Headers"))
 	}
 	return strings.Join(params, ", ")
 }
@@ -234,10 +235,11 @@ func hasRequestPath(route spec.Route) bool {
 }
 
 func hasRequestHeader(route spec.Route) bool {
-	ds, ok := route.RequestType.(spec.DefineStruct)
-	if !ok {
-		return false
-	}
-
-	return len(route.RequestTypeName()) > 0 && len(ds.GetTagMembers(headerTagKey)) > 0
+	return false // 不需要生成headers
+	// ds, ok := route.RequestType.(spec.DefineStruct)
+	// if !ok {
+	// 	return false
+	// }
+	//
+	// return len(route.RequestTypeName()) > 0 && len(ds.GetTagMembers(headerTagKey)) > 0
 }
